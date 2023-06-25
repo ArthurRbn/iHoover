@@ -17,25 +17,31 @@ export function parseArgs(args: string[]) {
     console.log(helpStr);
     process.exit(0);
   } else if (!parsedArgs.grid || !parsedArgs.position || !parsedArgs.instructions) {
-    console.error('Missing required arguments');
+    console.error('Missing required arguments.');
     process.exit(1);
   }
 
   let gridArgs = parsedArgs.grid.split(',').map(x => Number(x));
-  if (gridArgs.length !== 2 || gridArgs.some(isNaN)) {
-    console.error('Invalid grid argument. It should be x,y');
+  if (gridArgs.length !== 2 || gridArgs.some(isNaN) || gridArgs.some(x => x < 2)) {
+    console.error('Invalid grid argument. It should be x,y and both numbers must be greater than 1.');
     process.exit(1);
   }
 
   let positionArgs = parsedArgs.position.split(',');
   if (positionArgs.length !== 3 || isNaN(positionArgs[0]) || isNaN(positionArgs[1]) || !Object.values(Direction).includes(positionArgs[2])) {
-    console.error('Invalid position argument. It should be x,y,direction');
+    console.error('Invalid position argument. It should be x,y,direction.');
+    process.exit(1);
+  }
+  let posX = Number(positionArgs[0]);
+  let posY = Number(positionArgs[1]);
+  if (posX < 0 || gridArgs[0] <= posX || posY < 0 || gridArgs[1] <= posY) {
+    console.error('Starting position can\'t be off-grid.');
     process.exit(1);
   }
 
   let instructionsArgs = parsedArgs.instructions.split('');
   if (!instructionsArgs.every(ins => ['A', 'D', 'G'].includes(ins))) {
-    console.error('Invalid instructions. Instructions can only be a combination of D, G and A');
+    console.error('Invalid instructions. Instructions can only be a combination of D, G and A.');
     process.exit(1);
   }
 
